@@ -1,0 +1,51 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+      - name: Install ttfautohint
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ttfautohint zip
+      - name: Build Font IosevkaBerkeleyMono
+        shell: bash
+        run: |
+          git clone --depth=1 https://github.com/be5invis/Iosevka.git iosevka
+          cp private-build-plans.toml iosevka/
+          cd iosevka
+          npm install
+          npm run build -- ttf::IosevkaBerkeleyMono
+          cd dist
+          zip -9rq IosevkaBerkeleyMono-${{ github.ref_name }}.zip IosevkaBerkeleyMono
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: IosevkaBerkeleyMono-${{ github.ref_name }}
+          path: iosevka/dist/IosevkaBerkeleyMono-*.zip
+          if-no-files-found: error
+  release:
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v6
+        with:
+          path: ./
+          pattern: IosevkaBerkeleyMono-*
+          merge-multiple: true
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: IosevkaBerkeleyMono ${{ github.ref_name }}
+          body: Iosevka with Berkeley Mono style
+          files: IosevkaBerkeleyMono-*.zip
