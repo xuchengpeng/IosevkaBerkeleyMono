@@ -6,9 +6,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: lts/*
       - name: Install ttfautohint
@@ -27,7 +27,7 @@ jobs:
           cd dist
           zip -9rq IosevkaBerkeleyMono-${{ github.ref_name }}.zip IosevkaBerkeleyMono
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: IosevkaBerkeleyMono-${{ github.ref_name }}
           path: iosevka/dist/IosevkaBerkeleyMono-*.zip
@@ -38,14 +38,13 @@ jobs:
     needs: build
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           path: ./
           pattern: IosevkaBerkeleyMono-*
           merge-multiple: true
       - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: IosevkaBerkeleyMono ${{ github.ref_name }}
-          body: Iosevka with Berkeley Mono style
-          files: IosevkaBerkeleyMono-*.zip
+        run: |
+          gh release create ${{ github.ref_name }} IosevkaBerkeleyMono-*.zip --title "IosevkaBerkeleyMono ${{ github.ref_name }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
