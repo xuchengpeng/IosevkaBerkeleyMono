@@ -1,0 +1,14 @@
+private-build-plans.toml
+  h_76dde7977e1f21 139-141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "10.11.1",
+  "base_commit_sha": "8b03afdd868519684aff6becd8e1e46dc9216252",
+  "prompts": {},
+  "humans": {
+    "h_76dde7977e1f21": {
+      "author": "xuchengpeng <chuckxcp@qq.com>"
+    }
+  }
+}
